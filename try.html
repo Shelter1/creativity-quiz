@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creativity Quiz Portal</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#f2f2f2; padding:20px;}
+  h1 { text-align:center; color:#2E86C1; }
+  .quiz-container { background:#fff; padding:20px; border-radius:10px; max-width:800px; margin:auto; box-shadow:0 0 10px rgba(0,0,0,0.2);}
+  .question { margin-bottom:15px; padding:10px; border-bottom:1px solid #ccc;}
+  .question h3 { margin-bottom:5px;}
+  input[type="radio"] { margin-right:8px; }
+  button { background:#28a745; color:#fff; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; margin-top:10px;}
+  #score { font-size:18px; margin-top:20px; text-align:center; font-weight:bold;}
+  .input-field { margin-bottom:15px;}
+  .input-field label { display:block; margin-bottom:5px; font-weight:bold;}
+  .timer { text-align:right; font-size:16px; font-weight:bold;}
+</style>
+</head>
+<body>
+<h1>Kpantech Creativity Quiz Portal</h1>
+<div class="quiz-container">
+  <div class="input-field">
+    <label for="studentName">Name:</label>
+    <input type="text" id="studentName" required>
+  </div>
+  <div class="input-field">
+    <label for="studentClass">Class:</label>
+    <input type="text" id="studentClass" required>
+  </div>
+  <div class="timer">Time Left: <span id="time">15:00</span></div>
+  <form id="quizForm">
+    <div id="questions"></div>
+    <button type="button" onclick="submitQuiz()">Submit Quiz</button>
+  </form>
+  <div id="score"></div>
+</div>
+
+<script>
+// Timer: 15 minutes
+let timeLeft = 900;
+const timerDisplay = document.getElementById("time");
+const timerInterval = setInterval(() => {
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    timerDisplay.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    timeLeft--;
+    if(timeLeft < 0){
+        clearInterval(timerInterval);
+        submitQuiz();
+    }
+},1000);
+
+// Quiz Questions (20 difficult MCQs on Creativity)
+const questions = [
+  {
+    q: "Creativity in entrepreneurship primarily refers to:",
+    options: [
+      "Copying successful business models",
+      "Developing new ideas using imagination and experience",
+      "Following routine procedures only",
+      "Working without any plan"
+    ],
+    a: 1
+  },
+  {
+    q: "Which technique is commonly used to develop creativity?",
+    options:["Brainstorming","Paying suppliers","Filing taxes","Scheduling staff only"],
+    a:0
+  },
+  {
+    q:"A major barrier to creativity is:",
+    options:["Open-mindedness","Fear of failure","Exploration","Collaboration"],
+    a:1
+  },
+  {
+    q:"Which factor enhances creativity in Ghanaian businesses?",
+    options:["Strict routines","Supportive environment","Copying competitors","Ignoring customer feedback"],
+    a:1
+  },
+  {
+    q:"Mind mapping is used to:",
+    options:["Organize creative ideas","Record financial transactions","Hire employees","Track taxes"],
+    a:0
+  },
+  {
+    q:"Incubation in the creative process means:",
+    options:["Thinking about the idea subconsciously","Launching a product immediately","Copying competitor strategies","Hiring staff"],
+    a:0
+  },
+  {
+    q:"A Ghanaian practical example of creativity is:",
+    options:["Designing unique Kente bag patterns","Selling imported items only","Following others' business ideas","Working only in the office"],
+    a:0
+  },
+  {
+    q:"Which of these is a benefit of creativity in business?",
+    options:["Competitive advantage","More taxes","Longer working hours","Copying rivals"],
+    a:0
+  },
+  {
+    q:"Which is a feature of a creative person?",
+    options:["Curiosity","Avoiding challenges","Following strict rules","Ignoring ideas"],
+    a:0
+  },
+  {
+    q:"Brainwriting is a technique that helps:",
+    options:["Develop creative ideas collaboratively","Pay staff salaries","Stock inventory","Prepare legal documents"],
+    a:0
+  },
+  {
+    q:"Open and supportive environment helps creativity because:",
+    options:["It restricts ideas","It encourages experimentation","It reduces motivation","It increases costs"],
+    a:1
+  },
+  {
+    q:"Playfulness and experimentation in business leads to:",
+    options:["Innovation","Failure only","Routine work","No effect"],
+    a:0
+  },
+  {
+    q:"One feature of a creative mind is:",
+    options:["Flexibility","Rigidity","Avoidance","Imitation"],
+    a:0
+  },
+  {
+    q:"A key step in developing creativity is 'Illumination' which means:",
+    options:["Having sudden insight","Planning budgets","Hiring staff","Writing invoices"],
+    a:0
+  },
+  {
+    q:"A common consequence of negative criticism on creativity is:",
+    options:["Reduced innovation","Enhanced imagination","Better ideas","More collaboration"],
+    a:0
+  },
+  {
+    q:"Curiosity enhances creativity because:",
+    options:["It motivates exploration and learning","It increases fear of failure","It restricts thinking","It prevents risk-taking"],
+    a:0
+  },
+  {
+    q:"Freedom to fail allows creative entrepreneurs to:",
+    options:["Experiment without fear","Avoid planning","Ignore customers","Reduce profits"],
+    a:0
+  },
+  {
+    q:"Continuous learning is important for creativity because:",
+    options:["It improves skills and knowledge","It wastes time","It hinders innovation","It reduces focus"],
+    a:0
+  },
+  {
+    q:"Diverse experiences enhance creativity by:",
+    options:["Providing multiple perspectives","Limiting exposure","Increasing stress","Reducing options"],
+    a:0
+  },
+  {
+    q:"Feedback and collaboration enhance creativity by:",
+    options:["Offering new insights and refining ideas","Reducing teamwork","Increasing rigidity","Avoiding mistakes"],
+    a:0
+  }
+];
+
+// Randomize questions
+questions.sort(() => Math.random() - 0.5);
+
+const qContainer = document.getElementById("questions");
+questions.forEach((q,i)=>{
+  const div = document.createElement("div");
+  div.className = "question";
+  div.innerHTML = `<h3>Q${i+1}: ${q.q}</h3>` +
+  q.options.map((opt,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${opt}</label><br>`).join('');
+  qContainer.appendChild(div);
+});
+
+function submitQuiz(){
+  clearInterval(timerInterval);
+  const form = document.getElementById("quizForm");
+  const name = document.getElementById("studentName").value.trim();
+  const cls = document.getElementById("studentClass").value.trim();
+  if(!name || !cls){alert("Please enter name and class."); return;}
+  let score = 0;
+  questions.forEach((q,i)=>{
+    const sel = form[`q${i}`].value;
+    if(parseInt(sel) === q.a) score++;
+  });
+  document.getElementById("score").textContent = `${name} (${cls}) scored ${score}/${questions.length}`;
+
+  // Generate downloadable CSV for teacher
+  const csvContent = `Name,Class,Score\n${name},${cls},${score}`;
+  const blob = new Blob([csvContent], {type:'text/csv'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'teacher_score.csv';
+  link.click();
+}
+</script>
+</body>
+</html>
